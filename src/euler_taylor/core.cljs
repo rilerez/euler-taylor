@@ -67,14 +67,14 @@
 (set! (-> js/window .-onresize) handle-resized)
 
 (defn hello-world []
-  (reagent/after-render #(.typeset js/MathJax))
+  #_(reagent/after-render #(.typeset js/MathJax))
   (let [t (:t @app-state)
         [x y] (cis t)
         width  (:width @app-state)
         height (:height @app-state)
         side (min width (*  .8 height))]
     [:<>
-     (bulma/control {:class "box"}
+     [bulma/control {:class "box"}
        [:div.level.is-mobile
         "zoom: " [:input.slider
                   {:type "range" :value (:zoom @app-state)
@@ -88,9 +88,15 @@
                         :value t
                         :on-change update-t }]]
 
-       [:p (cl-format nil "$$e^{it} = \\sum_{n=0}^\\infty \\frac{(it)^n}{n!}= \\sum_{n=0}^{\\infty} \\frac{(~,2Fi)^n}{n!}\\approx ~,3F~,3@Fi$$" t x y)])
-     [:svg {:width side
-            :viewBox "-5 -5 10 10"}
+      #_[:p
+       (cl-format nil "$$
+e^{it} = \\sum_{n=0}^\\infty \\frac{(it)^n}{n!}
+= \\sum_{n=0}^{\\infty} \\frac{(~,2Fi)^n}{n!}
+\\approx ~,3F~,3@Fi$$"
+                  t x y)]]
+     [:svg.diagram
+      {:width side
+       :viewBox "-5 -5 10 10"}
       [:defs [:marker {:id "arrow"
                        :viewBox "-5 -5 10 10"
                        :orient "auto"

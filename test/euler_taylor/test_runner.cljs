@@ -2,7 +2,7 @@
 (ns taylor-svg.test-runner
   (:require
     ;; require all the namespaces that you want to test
-    [taylor-svg.core-test]
+    [euler-taylor.core-test]
     [figwheel.main.testing :refer [run-tests-async]]))
 
 (defn -main [& args]

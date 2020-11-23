@@ -1,7 +1,7 @@
 /* some style */
 
 
-svg {
+svg.diagram {
     stroke: black;
     stroke-width: .3%;
     transform: scaleY(-1);

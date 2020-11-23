@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Euler's formula via Taylor series</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="css/style.css" rel="stylesheet" type="text/css">
+    <link href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css" rel="stylesheet" type="text/css">
+    <link rel="icon" href="https://clojurescript.org/images/cljs-logo-icon-32.png">
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>
+      MathJax = {
+          tex: {
+              inlineMath: [['$', '$'], ['\\(', '\\)']]
+          }
+      };
+    </script>
+  </head>
+  <body>
+    <main class="columns is-centered is-desktop is-multiline">
+      <div class="column is-narrow">
+        <div id="app"> </div> <!-- end of app div -->
+        <script src="cljs-out/dev-main.js" type="text/javascript"></script>
+      </div>
+      <div class="column is-narrow">
+        <h1> Euler's theorem </h1>
+        $$e^{it}=\cos t+ i \sin t$$
+        <p> Proof </p>
+        $$
+        \begin{align}
+        e^{it}
+        &= \sum_{n=0}^\infty \frac{(it)^n}{n!} \\
+        &=
+        \underbrace{\sum_{k=0}^\infty \frac{(it)^{2k}}{(2k)!}}_{n=2k}
+        +\underbrace{\sum_{k=0}^\infty \frac{(it)^{2k+1}}{(2k+1)!}}_{n=2k+1} \\
+        &\text{but } i^{2k}=(-1)^k \\
+        &= \underbrace{\sum_{k=0}^\infty(-1)^k \frac{t^{2k}}{(2k)!}}_{\cos t} + i \underbrace{\sum_{k=0}^\infty (-1)^k  \frac{t^{2k+1}}{(2k+1)!} }_{\sin t}
+        \end{align}
+        $$
+      </div>
+    </main>
+  </body>
+</html>

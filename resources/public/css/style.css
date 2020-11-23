@@ -1,0 +1,40 @@
+/* some style */
+
+
+svg {
+    stroke: black;
+    stroke-width: .3%;
+    transform: scaleY(-1);
+}
+
+.arrowed{
+    marker-end: url(#arrow);
+}
+
+
+#unit{
+    fill: None;
+    stroke: grey;
+}
+
+
+
+.axis{
+    fill: None;
+    stroke: skyblue;
+    stroke-width: .1%;
+}
+
+.grid{
+    fill: None;
+    stroke: lightblue;
+    stroke-width: .05%;
+}
+
+.slider {
+    width: 100%;
+}
+
+input.input.is-narrow{
+    width:50pt;
+}

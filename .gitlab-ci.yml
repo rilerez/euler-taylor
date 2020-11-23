@@ -6,7 +6,7 @@ pages:
   stage: deploy
   script:
     - lein install
-    - clj -m figwheel.main -O advanced
+    - lein cljsbuild once
     - mkdir public
     - cp -r resources/public/* public
   artifacts:

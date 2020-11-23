@@ -22,7 +22,9 @@
             "fig:test"  ["run" "-m" "figwheel.main" "-co" "test.cljs.edn" "-m" "taylor-svg.test-runner"]}
 
   :cljsbuild {:builds [{:source-paths ["src"]
-                        :compiler {:output-to "resources/public/cljs-out/dev-main.js"
+                        :compiler {:output-to "resources/public/cljs-out/main.js"
+                                   :verbose true
+                                   :main euler-taylor.core
                                    :optimizations :advanced}}]}
   
   :profiles {:dev {:dependencies [[com.bhauman/figwheel-main "0.2.12"]

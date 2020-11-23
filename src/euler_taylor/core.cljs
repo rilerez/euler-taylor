@@ -78,22 +78,14 @@
        [:div.level.is-mobile
         "zoom: " [:input.slider
                   {:type "range" :value (:zoom @app-state)
-                   :min 1 :max 15 :step .2 :on-change update-zoom}]
-        ]
+                   :min 1 :max 15 :step .2 :on-change update-zoom}]]
        [:div.level.is-mobile
         "$t=$" [:input.input.is-narrow
                 {:type "text"  :value t :on-change update-t}]
         " "
         [:input.slider {:type "range" :min (- 14) :max 14 :step .02
                         :value t
-                        :on-change update-t }]]
-
-      #_[:p
-       (cl-format nil "$$
-e^{it} = \\sum_{n=0}^\\infty \\frac{(it)^n}{n!}
-= \\sum_{n=0}^{\\infty} \\frac{(~,2Fi)^n}{n!}
-\\approx ~,3F~,3@Fi$$"
-                  t x y)]]
+                        :on-change update-t }]]]
      [:svg.diagram
       {:width side
        :viewBox "-5 -5 10 10"}

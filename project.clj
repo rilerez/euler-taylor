@@ -21,11 +21,14 @@
             "fig:min"   ["run" "-m" "figwheel.main" "-O" "advanced" "-bo" "dev"]
             "fig:test"  ["run" "-m" "figwheel.main" "-co" "test.cljs.edn" "-m" "taylor-svg.test-runner"]}
 
-  :cljsbuild {:builds [{:source-paths ["src"]
-                        :compiler {:output-to "resources/public/cljs-out/main.js"
-                                   :verbose true
-                                   :main euler-taylor.core
-                                   :optimizations :advanced}}]}
+  :cljsbuild
+  {:builds [{:source-paths ["src"]
+             :externs ["externs.js"]
+             :compiler {:output-to "resources/public/cljs-out/main.js"
+                        :verbose true
+                        :infer-externs true
+                        :main euler-taylor.core
+                        :optimizations :advanced}}]}
   
   :profiles {:dev {:dependencies [[com.bhauman/figwheel-main "0.2.12"]
                                   [com.bhauman/rebel-readline-cljs "0.1.4"]]

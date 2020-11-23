@@ -1,12 +1,11 @@
 # This file is a template, and might need editing before it works on your project.
 # Full project: https://gitlab.com/pages/plain-html
-before_script:
-  - apt-get update -y 
-  - apt-get install clojure
+image: clojure:latest
 
 pages:
   stage: deploy
   script:
+    - clj -m figwheel.main -O advanced
     - mkdir public
     - cp -r resources/public/* public
   artifacts:

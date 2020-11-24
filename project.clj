@@ -13,7 +13,7 @@
                  [org.clojure/clojurescript "1.10.773"]
                  [reagent "0.10.0" ]
 
-                 [webjunk "3b49a1b"]]
+                 [webjunk "0eb341a"]]
   :source-paths ["src"]
 
   :aliases {"fig"       ["trampoline" "run" "-m" "figwheel.main"]
@@ -24,7 +24,7 @@
   :cljsbuild
   {:builds [{:source-paths ["src"]
              :externs ["externs.js"]
-             :compiler {:output-to "resources/public/cljs-out/main.js"
+             :compiler {:output-to "resources/public/cljs-out/dev-main.js"
                         :verbose true
                         :infer-externs true
                         :main euler-taylor.core

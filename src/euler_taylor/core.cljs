@@ -12,7 +12,7 @@
 
 
 ;; define your app data so that it doesn't get over-written on reload
-(defonce app-state (atom {:t 0 :width 200
+(defonce state (atom {:t 0 :width 200
                           :height 200
                           :zoom 1}))
 
@@ -28,22 +28,25 @@
 (def tau (* 2 Math/PI))
 (def term-count 40)
 
-(defn vecline [z0 z1]
+(defn vecline [z0 z1 & children]
   (let [len (abs (- z0 z1))
         cutoff .3]
-    (svg/line {:class (if (>= len cutoff) "arrowed" "")}
-      z0 z1)))
+    (apply
+     svg/line {:class (if (>= len cutoff) "arrowed" "")}
+     z0 z1
+     children)))
 
 (defn taylor-lines [terms time]
   (let [sums (partial-sums (taylor-terms (complex 0 time)))
         pairs (map vector sums (rest sums))]
     (into [:<>]
           (take terms
-                (for [[a b] pairs]
+                (for [[a b]  pairs]
+                  ^{:key b}
                   (vecline a b))))))
 
-(def update-t #(swap! app-state assoc :t (-> % .-target .-value)) )
-(def update-zoom #(swap! app-state assoc :zoom (-> % .-target .-value)) )
+(def update-t #(swap! state assoc :t (-> % .-target .-value)) )
+(def update-zoom #(swap! state assoc :zoom (-> % .-target .-value)) )
 
 (def infty 100000)
 
@@ -53,14 +56,17 @@
   (svg/line attr [(- infty) y] [infty y]))
 
 (def grid (for [i (range -50 50)]
-             (list (vline {:class "grid"} i)
-                   (hline {:class "grid"} i))))
-(def axes (list (hline {:class "axis"} 0)
-                (vline {:class "axis"} 0)))
+            ^{:key i}
+            [:<>
+             (vline {:class "grid"} i)
+             (hline {:class "grid"} i)]))
+(def axes [:<>
+           (hline {:class "axis"} 0)
+           (vline {:class "axis"} 0)])
 
 (defn handle-resized [& _]
   (let [x js/window]
-   (swap! app-state assoc
+   (swap! state assoc
           :width  (.-innerWidth x)
           :height (.-innerHeight x))))
 (handle-resized)
@@ -68,16 +74,18 @@
 
 (defn hello-world []
   #_(reagent/after-render #(.typeset js/MathJax))
-  (let [t (:t @app-state)
+  (let [t (:t @state)
         [x y] (cis t)
-        width  (:width @app-state)
-        height (:height @app-state)
-        side (min width (*  .8 height))]
+        width  (:width @state)
+        height (:height @state)
+        side (min width (*  .7 height))]
     [:<>
+     [:h1 "Taylor series of $e^{it}$ in the complex plane"]
+     [:p "$$e^{it}=\\sum_{n=0}^\\infty \\frac{(it)^n}{n!}$$"]
      [bulma/control {:class "box"}
        [:div.level.is-mobile
         "zoom: " [:input.slider
-                  {:type "range" :value (:zoom @app-state)
+                  {:type "range" :value (:zoom @state)
                    :min 1 :max 15 :step .2 :on-change update-zoom}]]
        [:div.level.is-mobile
         "$t=$" [:input.input.is-narrow
@@ -97,7 +105,7 @@
                        :refX 4
                        :refY 0}
               [:path {:d "M0,0 L-2,3 L5,0 L-2,-3 Z"}]]]
-      [:g {:transform (str "scale(" (/ (:zoom @app-state)) ")")}
+      [:g {:transform (str "scale(" (/ (:zoom @state)) ")")}
        grid axes
        (svg/circle {:id "unit"} [0 0] 1)
        [taylor-lines term-count t]]]]))
@@ -117,7 +125,7 @@
 ;; specify reload hook with ^;after-load metadata
 (defn ^:after-load on-reload []
   (mount-app-element)
-  ;; optionally touch your app-state to force rerendering depending on
+  ;; optionally touch your state to force rerendering depending on
   ;; your application
-  ;; (swap! app-state update-in [:__figwheel_counter] inc)
+  ;; (swap! state update-in [:__figwheel_counter] inc)
   )

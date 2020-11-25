@@ -12,9 +12,10 @@
 
 
 ;; define your app data so that it doesn't get over-written on reload
-(defonce state (atom {:t 0 :width 200
-                          :height 200
-                          :zoom 1}))
+(defonce state (atom {:t 3.14
+                      :width 200
+                      :height 200
+                      :zoom 1}))
 
 (defn get-app-element []
   (gdom/getElement "app"))

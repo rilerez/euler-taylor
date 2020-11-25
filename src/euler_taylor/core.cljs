@@ -108,7 +108,7 @@
               [:path {:d "M0,0 L-2,3 L5,0 L-2,-3 Z"}]]]
       [:g {:transform (str "scale(" (/ (:zoom @state)) ")")}
        grid axes
-       (svg/circle {:id "unit"} [0 0] 1)
+       [svg/circle {:id "unit"} [0 0] 1]
        [taylor-lines term-count t]]]]))
 
 

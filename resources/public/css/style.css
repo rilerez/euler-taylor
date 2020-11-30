@@ -1,7 +1,15 @@
 /* some style */
 
+:root {
+    --width: min(80vh,100vw);
+}
+
+.svgish{
+    max-width: var(--width);
+}
 
 svg.diagram {
+    width: var(--width);
     stroke: black;
     stroke-width: .3%;
     transform: scaleY(-1);

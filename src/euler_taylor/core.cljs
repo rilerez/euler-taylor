@@ -13,8 +13,6 @@
 
 ;; define your app data so that it doesn't get over-written on reload
 (defonce state (atom {:t 3.14
-                      :width 200
-                      :height 200
                       :zoom 1}))
 
 (defn get-app-element []
@@ -65,25 +63,15 @@
            (hline {:class "axis"} 0)
            (vline {:class "axis"} 0)])
 
-(defn handle-resized [& _]
-  (let [x js/window]
-   (swap! state assoc
-          :width  (.-innerWidth x)
-          :height (.-innerHeight x))))
-(handle-resized)
-(set! (-> js/window .-onresize) handle-resized)
 
 (defn hello-world []
   #_(reagent/after-render #(.typeset js/MathJax))
   (let [t (:t @state)
-        [x y] (cis t)
-        width  (:width @state)
-        height (:height @state)
-        side (min width (*  .7 height))]
+        [x y] (cis t)]
     [:<>
      [:h1 "Taylor series of $e^{it}$ in the complex plane"]
      [:p "$$e^{it}=\\sum_{n=0}^\\infty \\frac{(it)^n}{n!}$$"]
-     [bulma/control {:class "box"}
+     [bulma/control {:class "box svgish"}
        [:div.level.is-mobile
         "zoom: " [:input.slider
                   {:type "range" :value (:zoom @state)
@@ -95,21 +83,23 @@
         [:input.slider {:type "range" :min (- 14) :max 14 :step .02
                         :value t
                         :on-change update-t }]]]
-     [:svg.diagram
-      {:width side
-       :viewBox "-5 -5 10 10"}
-      [:defs [:marker {:id "arrow"
-                       :viewBox "-5 -5 10 10"
-                       :orient "auto"
-                       :markerWidth  10
-                       :markerHeight 10
-                       :refX 4
-                       :refY 0}
-              [:path {:d "M0,0 L-2,3 L5,0 L-2,-3 Z"}]]]
-      [:g {:transform (str "scale(" (/ (:zoom @state)) ")")}
-       grid axes
-       [svg/circle {:id "unit"} [0 0] 1]
-       [taylor-lines term-count t]]]]))
+     [:div.svg-container
+      [:svg.diagram
+       {
+        :preserveAspectRatio "xMidYMid meet"
+        :viewBox "-5 -5 10 10"}
+       [:defs [:marker {:id "arrow"
+                        :viewBox "-5 -5 10 10"
+                        :orient "auto"
+                        :markerWidth  10
+                        :markerHeight 10
+                        :refX 4
+                        :refY 0}
+               [:path {:d "M0,0 L-2,3 L5,0 L-2,-3 Z"}]]]
+       [:g {:transform (str "scale(" (/ (:zoom @state)) ")")}
+        grid axes
+        [svg/circle {:id "unit"} [0 0] 1]
+        [taylor-lines term-count t]]]]]))
 
 
 (defn mount [el]

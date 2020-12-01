@@ -7,7 +7,9 @@
    [webjunk.svg :as svg]
    [goog.dom :as gdom]
    [reagent.core :as reagent :refer [atom]]
-   [reagent.dom :as rdom])
+   [reagent.dom :as rdom]
+
+   cljsjs.katex)
   (:require-macros [webjunk.pseudotag :refer [deftagfn]]))
 
 
@@ -38,30 +40,7 @@
       svg/line {:class (str (if (>= len cutoff) " arrowed")
                             (if (= (:term @state) n) " selected"))}
       z0 z1
-      children)
-     #_(let [offset (case (mod n 4)
-                    0 (complex 0 0.0)
-                    1 (complex 0 0.0)
-                    2 (complex -1 0.0)
-                    3 (complex -1 0.0))
-           ptify (fn [[x y]] [x y])]
-       [:g {:transform (apply
-                        fmt "translate(~a,~a)  scale(.02) scale(1,-1)"
-                        (ptify (+ z1 offset (complex 0.1 0.5))))}
-        [:foreignObject {:x 0 :y 0 :width 65 :height 60}
-         [:div.mathlbl
-          [:math [:mfrac
-                  [:msup
-                   [:mrow
-                    [:mo "("]
-                    [:mi "i"]
-                    [:mi "t"]
-                    [:mo ")"]]
-                   [:mn n]]
-                  [:mrow [:mn n] [:mo "!"]]]]]
-         ]])
-     ]
-    ))
+      children)]))
 
 (defn taylor-lines [terms time]
   (let [sums (partial-sums (taylor-terms (complex 0 time)))
@@ -70,10 +49,11 @@
       (take terms
             (for [[n [a b]]  (map vector (range) pairs)]
               [:g {:key n}
+               [vecline n a b ]
                [svg/line {:class "clicker"
                           :on-click #(swap! state assoc :term n)}
                 a b]
-               [vecline n a b ]]))]))
+               ]))]))
 
 (def update-t #(swap! state assoc :t (-> % .-target .-value)) )
 (def update-zoom #(swap! state assoc :zoom (-> % .-target .-value)) )
@@ -94,6 +74,12 @@
            (hline {:class "axis"} 0)
            (vline {:class "axis"} 0)])
 
+(defn tex
+  ([s] (tex s {}))
+  ([s opts]
+   [:span {:dangerouslySetInnerHTML {:__html
+                                     (.renderToString js/katex s (clj->js opts))}}]))
+
 
 (defn hello-world []
   #_(reagent/after-render #(.typeset js/MathJax))
@@ -101,31 +87,18 @@
         [x y] (cis t)]
     [:<>
      [:h1 "Taylor series of "
-      [:math [:msup [:mi :e] [:mrow
-                               [:mi :i]
-                               [:mi :t]]]]
+      [tex "e^{it}"]
       " in the complex plane"]
-     [:p
-      [:math {:display :block}
-       [:mrow
-        [:msup [:mi :e] [:mrow [:mi :i] [:mi :t]]]
-        [:mo :=]
-        [:munderover
-         [:mi :∑]
-         [:mrow [:mi :n] [:mo :=] [:mn 0]]
-         [:mn :∞]]
-        [:mfrac
-         [:msup
-          [:mrow [:mo "("] [:mi :i] [:mi :t] [:mo ")"]]
-          [:mi :n]]
-         [:mrow [:mi :n] [:mi :!]]]]]]
+
+
      [bulma/control {:class "box svgish"}
       [:div.level.is-mobile
        "zoom: " [:input.slider
                  {:type "range" :value (:zoom @state)
                   :min 1 :max 15 :step .2 :on-change update-zoom}]]
+
       [:div.level.is-mobile
-       [:math [:mrow [:mi "t"] [:mo "="]]]
+       [tex "t="]
        [:input.input.is-narrow
         {:type "text"  :value t :on-change update-t}]
        " "
@@ -133,23 +106,21 @@
                        :value t
                        :on-change update-t }]]]
 
-     (let [term (:term @state)]
-       [:div
-        [:math {:display :block}
-         [:mrow
-          [:msup [:mi :e] [:mrow [:mi "i"] [:mi "t"]]]
-          [:mo "="]
-          (interpose [:mo "+"]
-                     (take 5
-                           (for [n (range)]
-                             [:mfrac {:class (if (= n term) "selected")}
-                              [:msup
-                               [:mrow [:mop "("] [:mi "i"] [:mi "t"] [:mop ")"]]
-                               [:mn n]]
-                              [:mrow [:mn n] [:mo "!"]]])))
-          [:mo :+]
-          [:mo :⋯]]]])
-
+     (if-let [{t :t n :term} @state]
+       [tex
+        (str
+         "\\frac{(it)^{"n"}}{"n"!}= i^{"n"}\\frac{"t"^{"n"}}{"n"!}= "
+         (case (mod n 4)
+           0 ""
+           1 "i"
+           2 "-"
+           3 "-i")
+         " \\frac{("t"i)^{"n"}}" "{" n "!}="
+         (let [[x y] (nth (taylor-terms (complex 0 t)) n)]
+           (fmt "~,3F~,3@Fi" x y))
+         )
+        {:displayMode true}]
+       )
      [:div.svg-container
       [:svg.diagram
        {

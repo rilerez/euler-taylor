@@ -8,13 +8,6 @@
     font-family: "Latin Modern Roman, serif";
 }
 
-math {
-    font-size: 120%;
-}
-
-math[display=block]{
-    font-size: 140%;
-}
 
 .selected{
     color: blue;

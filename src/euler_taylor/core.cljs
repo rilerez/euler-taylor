@@ -51,7 +51,7 @@
       (take terms
             (for [[n [a b]] zipped-pairs]
               [:g {:key n}
-               (if (#{peek term}  n)
+               (if (#{peek}  n)
                  (svg/line {:class
                             (str "shadow"
                                  (if (= term n) " selected"))}
@@ -133,8 +133,7 @@
          " \\frac{("t"i)^{"n"}}" "{" n "!}="
          (let [[x y] (nth (taylor-terms (complex 0 t)) n)]
            (fmt "~,3F~,3@Fi" x y)))
-        {:displayMode true}]
-       )
+        {:displayMode true}])
      [:div.svg-container
       [:svg.diagram
        {

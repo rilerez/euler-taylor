@@ -37,8 +37,7 @@ line.shadow{
     stroke:lightblue;
 }
 line.shadow.selected{
-    stroke-width:2%;
-    stroke: skyblue;
+    stroke: None;
 }
 
 svg.diagram {

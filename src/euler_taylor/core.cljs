@@ -27,22 +27,53 @@
 (def tau (* 2 Math/PI))
 (def term-count 40)
 
-(defn vecline [z0 z1 & children]
+
+(defn fmt [& args] (apply cl-format nil args))
+
+(defn vecline [n z0 z1 & children]
   (let [len (abs (- z0 z1))
         cutoff .3]
-    (apply
-     svg/line {:class (if (>= len cutoff) "arrowed" "")}
-     z0 z1
-     children)))
+    [:<>
+     (apply
+      svg/line {:class (str (if (>= len cutoff) " arrowed")
+                            (if (= (:term @state) n) " selected"))}
+      z0 z1
+      children)
+     #_(let [offset (case (mod n 4)
+                    0 (complex 0 0.0)
+                    1 (complex 0 0.0)
+                    2 (complex -1 0.0)
+                    3 (complex -1 0.0))
+           ptify (fn [[x y]] [x y])]
+       [:g {:transform (apply
+                        fmt "translate(~a,~a)  scale(.02) scale(1,-1)"
+                        (ptify (+ z1 offset (complex 0.1 0.5))))}
+        [:foreignObject {:x 0 :y 0 :width 65 :height 60}
+         [:div.mathlbl
+          [:math [:mfrac
+                  [:msup
+                   [:mrow
+                    [:mo "("]
+                    [:mi "i"]
+                    [:mi "t"]
+                    [:mo ")"]]
+                   [:mn n]]
+                  [:mrow [:mn n] [:mo "!"]]]]]
+         ]])
+     ]
+    ))
 
 (defn taylor-lines [terms time]
   (let [sums (partial-sums (taylor-terms (complex 0 time)))
         pairs (map vector sums (rest sums))]
-    (into [:<>]
-          (take terms
-                (for [[a b]  pairs]
-                  ^{:key b}
-                  (vecline a b))))))
+     [:<>
+      (take terms
+            (for [[n [a b]]  (map vector (range) pairs)]
+              [:g {:key n}
+               [svg/line {:class "clicker"
+                          :on-click #(swap! state assoc :term n)}
+                a b]
+               [vecline n a b ]]))]))
 
 (def update-t #(swap! state assoc :t (-> % .-target .-value)) )
 (def update-zoom #(swap! state assoc :zoom (-> % .-target .-value)) )
@@ -69,20 +100,56 @@
   (let [t (:t @state)
         [x y] (cis t)]
     [:<>
-     [:h1 "Taylor series of $e^{it}$ in the complex plane"]
-     [:p "$$e^{it}=\\sum_{n=0}^\\infty \\frac{(it)^n}{n!}$$"]
+     [:h1 "Taylor series of "
+      [:math [:msup [:mi :e] [:mrow
+                               [:mi :i]
+                               [:mi :t]]]]
+      " in the complex plane"]
+     [:p
+      [:math {:display :block}
+       [:mrow
+        [:msup [:mi :e] [:mrow [:mi :i] [:mi :t]]]
+        [:mo :=]
+        [:munderover
+         [:mi :∑]
+         [:mrow [:mi :n] [:mo :=] [:mn 0]]
+         [:mn :∞]]
+        [:mfrac
+         [:msup
+          [:mrow [:mo "("] [:mi :i] [:mi :t] [:mo ")"]]
+          [:mi :n]]
+         [:mrow [:mi :n] [:mi :!]]]]]]
      [bulma/control {:class "box svgish"}
-       [:div.level.is-mobile
-        "zoom: " [:input.slider
-                  {:type "range" :value (:zoom @state)
-                   :min 1 :max 15 :step .2 :on-change update-zoom}]]
-       [:div.level.is-mobile
-        "$t=$" [:input.input.is-narrow
-                {:type "text"  :value t :on-change update-t}]
-        " "
-        [:input.slider {:type "range" :min (- 14) :max 14 :step .02
-                        :value t
-                        :on-change update-t }]]]
+      [:div.level.is-mobile
+       "zoom: " [:input.slider
+                 {:type "range" :value (:zoom @state)
+                  :min 1 :max 15 :step .2 :on-change update-zoom}]]
+      [:div.level.is-mobile
+       [:math [:mrow [:mi "t"] [:mo "="]]]
+       [:input.input.is-narrow
+        {:type "text"  :value t :on-change update-t}]
+       " "
+       [:input.slider {:type "range" :min (- 14) :max 14 :step .02
+                       :value t
+                       :on-change update-t }]]]
+
+     (let [term (:term @state)]
+       [:div
+        [:math {:display :block}
+         [:mrow
+          [:msup [:mi :e] [:mrow [:mi "i"] [:mi "t"]]]
+          [:mo "="]
+          (interpose [:mo "+"]
+                     (take 5
+                           (for [n (range)]
+                             [:mfrac {:class (if (= n term) "selected")}
+                              [:msup
+                               [:mrow [:mop "("] [:mi "i"] [:mi "t"] [:mop ")"]]
+                               [:mn n]]
+                              [:mrow [:mn n] [:mo "!"]]])))
+          [:mo :+]
+          [:mo :⋯]]]])
+
      [:div.svg-container
       [:svg.diagram
        {
@@ -96,10 +163,14 @@
                         :refX 4
                         :refY 0}
                [:path {:d "M0,0 L-2,3 L5,0 L-2,-3 Z"}]]]
+
        [:g {:transform (str "scale(" (/ (:zoom @state)) ")")}
         grid axes
+        
         [svg/circle {:id "unit"} [0 0] 1]
         [taylor-lines term-count t]]]]]))
+
+(swap! state assoc :term 3)
 
 
 (defn mount [el]

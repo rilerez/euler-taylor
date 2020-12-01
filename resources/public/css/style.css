@@ -29,11 +29,16 @@ div.mathlbl:hover{
 }
 
 line.clicker{
-    stroke-width: 1.2%;
-    stroke: rgba(255,0,0,0);
+    stroke-width: 6%;
+    stroke: rgba(0,0,0,0);
 }
-line.clicker:hover{
-    stroke:skyblue;
+line.shadow{
+    stroke-width: 1.0%;
+    stroke:lightblue;
+}
+line.shadow.selected{
+    stroke-width:2%;
+    stroke: skyblue;
 }
 
 svg.diagram {

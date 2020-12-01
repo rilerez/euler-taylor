@@ -38,22 +38,33 @@
     [:<>
      (apply
       svg/line {:class (str (if (>= len cutoff) " arrowed")
-                            (if (= (:term @state) n) " selected"))}
+                            (if (= n (:term @state)) " selected"))}
       z0 z1
       children)]))
 
 (defn taylor-lines [terms time]
   (let [sums (partial-sums (taylor-terms (complex 0 time)))
-        pairs (map vector sums (rest sums))]
+        pairs (map vector sums (rest sums))
+        {:keys [peek term]} @state
+        zipped-pairs (map vector (range) pairs)]
      [:<>
       (take terms
-            (for [[n [a b]]  (map vector (range) pairs)]
+            (for [[n [a b]] zipped-pairs]
               [:g {:key n}
-               [vecline n a b ]
-               [svg/line {:class "clicker"
-                          :on-click #(swap! state assoc :term n)}
-                a b]
-               ]))]))
+               (if (#{peek term}  n)
+                 (svg/line {:class
+                            (str "shadow"
+                                 (if (= term n) " selected"))}
+                   a b))
+               [vecline n a b ]]))
+      (take terms
+            (for [[n [a b]] zipped-pairs]
+              (if (not= n term)
+                [svg/line {:class "clicker"
+                           :on-mouse-over #(swap! state assoc :peek n)
+                           :on-mouse-leave #(swap! state dissoc :peek)
+                           :on-click #(swap! state assoc :term n)}
+                 a b])))]))
 
 (def update-t #(swap! state assoc :t (-> % .-target .-value)) )
 (def update-zoom #(swap! state assoc :zoom (-> % .-target .-value)) )
@@ -77,8 +88,10 @@
 (defn tex
   ([s] (tex s {}))
   ([s opts]
-   [:span {:dangerouslySetInnerHTML {:__html
-                                     (.renderToString js/katex s (clj->js opts))}}]))
+   [:span
+    {:dangerouslySetInnerHTML
+     {:__html
+      (.renderToString js/katex s (clj->js opts))}}]))
 
 
 (defn hello-world []
@@ -117,8 +130,7 @@
            3 "-i")
          " \\frac{("t"i)^{"n"}}" "{" n "!}="
          (let [[x y] (nth (taylor-terms (complex 0 t)) n)]
-           (fmt "~,3F~,3@Fi" x y))
-         )
+           (fmt "~,3F~,3@Fi" x y)))
         {:displayMode true}]
        )
      [:div.svg-container
@@ -139,7 +151,7 @@
         grid axes
         
         [svg/circle {:id "unit"} [0 0] 1]
-        [taylor-lines term-count t]]]]]))
+        ( taylor-lines term-count t )]]]]))
 
 (swap! state assoc :term 3)
 

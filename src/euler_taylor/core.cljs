@@ -103,6 +103,7 @@
       [tex "e^{it}"]
       " in the complex plane"]
 
+     [tex "e^{it}=\\sum_{n=0}^\\infty \\frac{(it)^n}{n!}" {:displayMode true}]
 
      [bulma/control {:class "box svgish"}
       [:div.level.is-mobile

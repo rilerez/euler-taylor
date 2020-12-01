@@ -103,8 +103,6 @@
       [tex "e^{it}"]
       " in the complex plane"]
 
-     [tex "e^{it}=\\sum_{n=0}^\\infty \\frac{(it)^n}{n!}" {:displayMode true}]
-
      [bulma/control {:class "box svgish"}
       [:div.level.is-mobile
        "zoom: " [:input.slider
@@ -121,19 +119,24 @@
                        :on-change update-t }]]]
 
      (if-let [{t :t n :term} @state]
-       [tex
-        (str
-         "n="n "\\quad"
-         "\\frac{(it)^{"n"}}{"n"!}= i^{"n"}\\frac{t^{"n"}}{"n"!}= "
-         (case (mod n 4)
-           0 ""
-           1 "i"
-           2 "-"
-           3 "-i")
-         " \\frac{("t"i)^{"n"}}" "{" n "!}="
-         (let [[x y] (nth (taylor-terms (complex 0 t)) n)]
-           (fmt "~,3F~,3@Fi" x y)))
-        {:displayMode true}])
+       [:<>
+        [tex
+         (str "e^{it}=\\sum_{n=0}^\\infty \\frac{(it)^n}{n!}="
+              (fmt "~,3F~,3@Fi" x y))
+         {:displayMode true}]
+        [tex
+         (str
+          "n="n "\\quad"
+          "\\frac{(it)^{"n"}}{"n"!}= i^{"n"}\\frac{t^{"n"}}{"n"!}= "
+          (case (mod n 4)
+            0 ""
+            1 "i"
+            2 "-"
+            3 "-i")
+          " \\frac{("t"i)^{"n"}}" "{" n "!}="
+          (let [[x y] (nth (taylor-terms (complex 0 t)) n)]
+            (fmt "~,3F~,3@Fi" x y)))
+         {:displayMode true}]])
      [:div.svg-container
       [:svg.diagram
        {

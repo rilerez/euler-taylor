@@ -21,7 +21,7 @@
   (gdom/getElement "app"))
 
 (defn pows-of [z] (iterate #(* % z) 1))
-(def facts (reductions * 1 (map inc (range))))
+(def facts (reductions * (complex 1 0) (map inc (range))))
 (defn taylor-terms [z] (map / (pows-of z) facts))
 (defn partial-sums [series]
   (reductions  + (complex) series))

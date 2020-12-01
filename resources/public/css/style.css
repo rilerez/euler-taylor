@@ -1,7 +1,7 @@
 /* some style */
 
 :root {
-    --width: min(80vh,100vw);
+    --width: min(75vh,100vw);
 }
 
 * {

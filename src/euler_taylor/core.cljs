@@ -123,6 +123,7 @@
      (if-let [{t :t n :term} @state]
        [tex
         (str
+         "n="n "\\quad"
          "\\frac{(it)^{"n"}}{"n"!}= i^{"n"}\\frac{t^{"n"}}{"n"!}= "
          (case (mod n 4)
            0 ""

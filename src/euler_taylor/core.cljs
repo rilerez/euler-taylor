@@ -9,12 +9,14 @@
    [reagent.core :as reagent :refer [atom]]
    [reagent.dom :as rdom]
 
-   cljsjs.katex)
+   ; cljsjs.katex
+   )
   (:require-macros [webjunk.pseudotag :refer [deftagfn]]))
 
 
 ;; define your app data so that it doesn't get over-written on reload
 (defonce state (atom {:t 3.14
+                      :term (rand-int 6)
                       :zoom 1}))
 
 (defn get-app-element []
@@ -93,9 +95,7 @@
      {:__html
       (.renderToString js/katex s (clj->js opts))}}]))
 
-
 (defn hello-world []
-  #_(reagent/after-render #(.typeset js/MathJax))
   (let [t (:t @state)
         [x y] (cis t)]
     [:<>
@@ -118,30 +118,29 @@
                        :value t
                        :on-change update-t }]]]
 
-     (if-let [{t :t n :term} @state]
+     (let [{t :t n :term} @state]
        [:<>
         [tex
          (str "e^{it}=\\sum_{n=0}^\\infty \\frac{(it)^n}{n!}="
               (fmt "~,3F~,3@Fi" x y))
          {:displayMode true}]
-        [tex
-         (str
-          "n="n "\\quad"
-          "\\frac{(it)^{"n"}}{"n"!}= i^{"n"}\\frac{t^{"n"}}{"n"!}= "
-          (case (mod n 4)
-            0 ""
-            1 "i"
-            2 "-"
-            3 "-i")
-          " \\frac{("t"i)^{"n"}}" "{" n "!}="
-          (let [[x y] (nth (taylor-terms (complex 0 t)) n)]
-            (fmt "~,3F~,3@Fi" x y)))
-         {:displayMode true}]])
+        (if n
+          [tex
+           (str
+            "n="n"\\quad"
+            "\\frac{(it)^{"n"}}{"n"!}= i^{"n"}\\frac{t^{"n"}}{"n"!}= "
+            (case (mod n 4)
+              0 ""
+              1 "i"
+              2 "-"
+              3 "-i")
+            " \\frac{("t"i)^{"n"}}" "{" n "!}="
+            (let [[x y] (nth (taylor-terms (complex 0 t)) n)]
+              (fmt "~,3F~,3@Fi" x y)))
+           {:displayMode true}])])
      [:div.svg-container
-      [:svg.diagram
-       {
-        :preserveAspectRatio "xMidYMid meet"
-        :viewBox "-5 -5 10 10"}
+      [:svg.diagram {:preserveAspectRatio "xMidYMid meet"
+                     :viewBox "-5 -5 10 10"}
        [:defs [:marker {:id "arrow"
                         :viewBox "-5 -5 10 10"
                         :orient "auto"
@@ -157,7 +156,6 @@
         [svg/circle {:id "unit"} [0 0] 1]
         ( taylor-lines term-count t )]]]]))
 
-(swap! state assoc :term 3)
 
 
 (defn mount [el]

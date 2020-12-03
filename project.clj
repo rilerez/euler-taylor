@@ -13,7 +13,6 @@
                  [org.clojure/clojurescript "1.10.773"]
                  [reagent "0.10.0" ]
 
-                 [cljsjs/katex "0.11.1-0"]
                  [webjunk "0eb341a"]]
   :source-paths ["src"]
 

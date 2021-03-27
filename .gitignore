@@ -1,10 +1,5 @@
-pom.xml
-*jar
-resources/public/cljs-out/
 /lib/
 /classes/
-/out/
-/target/
 .lein-deps-sum
 .lein-repl-history
 .lein-plugins/

@@ -1,0 +1,76 @@
+/* some style */
+
+:root {
+    --width: min(75vh,100vw);
+}
+
+* {
+    font-family: "Latin Modern Roman, serif";
+}
+
+
+.selected{
+    color: blue;
+    font-size: 120%;
+    stroke: blue;
+    stroke-width: .5%;
+}
+
+.scrolling{
+    overflow: scroll;
+}
+
+.svgish{
+    max-width: var(--width);
+}
+
+line.clicker{
+    stroke-width: 6%;
+    stroke: rgba(0,0,0,0);
+}
+line.shadow{
+    stroke-width: 1.0%;
+    stroke:lightblue;
+}
+line.shadow.selected{
+    stroke: None;
+}
+
+svg.diagram {
+    width: var(--width);
+    stroke: black;
+    stroke-width: .3%;
+    transform: scaleY(-1);
+}
+
+.arrowed{
+    marker-end: url(#arrow);
+}
+
+
+#unit{
+    fill: None;
+    stroke: grey;
+}
+
+
+
+.axis{
+    fill: None;
+    stroke: skyblue;
+    stroke-width: .1%;
+}
+
+.grid{
+    fill: None;
+    stroke: lightblue;
+    stroke-width: .05%;
+}
+
+.slider {
+    width: 100%;
+}
+
+input.input.is-narrow{
+    width:50pt;
+}
